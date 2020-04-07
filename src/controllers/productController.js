@@ -18,7 +18,37 @@ const productValidation = {
     suggestedPrice: Joi.number().required()
   })
 };
+router.post('/', validate(productValidation, {}, {}, {}), async (req, resp) => {
+  try {
+    const {
+      type,
+      brand,
+      characteristics,
+      size,
+      color,
+      purchaseTagValue,
+      amountPaidOnPurchase,
+      suggestedPrice
+    } = req.body;
 
+    const product = await Product.create({
+      type,
+      brand,
+      characteristics,
+      size,
+      color,
+      purchaseTagValue,
+      amountPaidOnPurchase,
+      valueForMargin: amountPaidOnPurchase * 2,
+      suggestedPrice
+    });
+
+    resp.send(product);
+  } catch (err) {
+    console.log(err);
+    resp.status(500).json({ message: 'Error using database' });
+  }
+});
 router.get('/', async (req, resp) => {
   try {
     const products = await Product.find();
